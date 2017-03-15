@@ -1,8 +1,8 @@
 'use strict';
-const util = require('./util');
-const { before }=util;
+var util = require('./util');
+var { before }=util;
 
-const EventEmit = function () {
+var EventEmit = function () {
   this.on = function (name, callback) {
     var _event = this._event = this._event || {};
     var arr = _event[name];

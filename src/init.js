@@ -1,4 +1,4 @@
-const EventEmit=require('./eventEmit');
+const EventEmit=require('./EventEmit');
 
 const eventEmit=new EventEmit();
 
