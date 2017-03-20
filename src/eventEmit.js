@@ -36,6 +36,11 @@ var EventEmit = function () {
       item.apply(this)
     })
   };
+
+  this.listenTo = function (model, type, callback) {
+    // model._event
+    // callback
+  }
 };
 
 module.exports = EventEmit;

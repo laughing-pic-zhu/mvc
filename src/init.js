@@ -1,15 +1,22 @@
-const EventEmit=require('./EventEmit');
+const Model = require('./Model');
+const View = require('./View');
 
-const eventEmit=new EventEmit();
-
-var b=function(){
-  console.log(2)
-};
-eventEmit.on('a',function(){
-  console.log(1);
+const model = new Model({
+  sex: 'male',
+  name: 'zhujian'
 });
 
-eventEmit.once('a',b);
+new View({
+  initialize: function () {
+    this.listenTo(model, 'change', function () {
+      console.log('change');
+    });
+    this.listenTo(model, 'destroy', function () {
+      console.log('destroy');
+    })
+  }
+});
 
-// eventEmit.off('a',b);
-eventEmit.trigger('a');
+model.set('name', 'daoge');
+console.log(model.toJSON());
+model.clear();
