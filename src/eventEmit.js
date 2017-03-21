@@ -31,10 +31,15 @@ var EventEmit = function () {
 
   this.trigger = function (name) {
     var _event = this._event || {};
-    var arr = _event[name] || [];
-    arr.forEach(item=> {
+    var serviceArr = _event[name] || [];
+    serviceArr.forEach(item=> {
       item.apply(this)
-    })
+    });
+
+    var allArr = _event['all'] || [];
+    allArr.forEach(item=> {
+      item.apply(this)
+    });
   };
 
   this.listenTo = function (model, type, callback) {
