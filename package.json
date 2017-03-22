@@ -1,0 +1,35 @@
+{
+  "name": "mvvm",
+  "version": "1.0.0",
+  "description": "简易mvc库,仿backbone",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "buildminify": "webpack --uglify=true",
+    "build": "webpack",
+    "start":"webpack-dev-server --hot --inline --content-base example/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laughing-pic-zhu/mvc.git"
+  },
+  "keywords": [
+    "mvc","backbone"
+  ],
+  "author": "laughing猪爷",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/laughing-pic-zhu/mvc/issues"
+  },
+  "homepage": "https://github.com/laughing-pic-zhu/mvc#readme",
+  "devDependencies": {
+    "babel-core": "^6.17.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.2"
+  }
+}

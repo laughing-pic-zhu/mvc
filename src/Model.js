@@ -1,34 +1,33 @@
-var EventEmit = require('./EventEmit');
-var { extend }=require('./util');
+import EventEmit from './EventEmit';
+import {extend} from './util';
+
 function Model(obj) {
-  this.init(obj);
+  this.init(obj || {});
 }
 
 var obj = {
-  default: {},
-  set: function (key, value) {
-    this.attributes[key] = value;
+  constructor: Model,
+  set: function (model) {
+    var _model = Object.assign(this.attributes, model);
+    this.attributes = _model;
     this.trigger('change');
   },
 
-  clear: function () {
+  destroy: function () {
     this.attributes = {};
     this.trigger('destroy');
   },
 
   toJSON: function () {
-    return JSON.stringify(this.attributes)
+    return this.attributes;
   },
 
   init: function (obj) {
-    this.attributes = obj ? obj : this.default;
+    this.attributes = Object.assign(this.default, obj);
   }
 };
 
-obj.__proto__ = new EventEmit();
+Model.prototype = Object.assign(Object.create(new EventEmit()), obj);
+Model.extend = extend.bind(Model);
 
-Model.prototype = obj;
-Model.prototype.constructor = Model;
-Model.extend = extend;
-
-module.exports = Model;
+export default  Model;

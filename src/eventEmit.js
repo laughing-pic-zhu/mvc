@@ -1,6 +1,6 @@
 'use strict';
-var util = require('./util');
-var { before }=util;
+
+import {before} from './util';
 
 var EventEmit = function () {
   this.on = function (name, callback) {
@@ -29,24 +29,23 @@ var EventEmit = function () {
     })
   };
 
-  this.trigger = function (name) {
+  this.trigger = function (name,option) {
     var _event = this._event || {};
     var serviceArr = _event[name] || [];
     serviceArr.forEach(item=> {
-      item.apply(this)
+      item.call(this,option)
     });
 
     var allArr = _event['all'] || [];
     allArr.forEach(item=> {
-      item.apply(this)
+      item.call(this,option)
     });
   };
 
   this.listenTo = function (model, type, callback) {
-    // model._event
-    // callback
+   
   }
 };
 
-module.exports = EventEmit;
+export default EventEmit
 

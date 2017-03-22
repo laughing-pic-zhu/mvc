@@ -1,4 +1,4 @@
-var before = function (n, callback) {
+export const before = (n, callback)=> {
   return ()=> {
     if (n >= 1) {
       callback.apply(this);
@@ -10,15 +10,11 @@ var before = function (n, callback) {
   }
 };
 
-var extend = function (props) {
+export const extend = function(props) {
   var parent = this;
   var child = function () {
     parent.apply(this, arguments);
   };
   child.prototype = Object.assign(Object.create(parent.prototype), props, { constructor: child });
   return child;
-};
-
-module.exports = {
-  before, extend
 };
