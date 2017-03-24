@@ -1,8 +1,11 @@
 import EventEmit from './EventEmit';
 import {extend} from './util';
 
-function Model(obj) {
-  this.init(obj || {});
+function Model(obj, collection) {
+  this.attributes = Object.assign({}, this.default, obj || {});
+  if (collection) {
+    this.collection = collection;
+  }
 }
 
 var obj = {
@@ -10,20 +13,23 @@ var obj = {
   set: function (model) {
     var _model = Object.assign(this.attributes, model);
     this.attributes = _model;
-    this.trigger('change');
+    this._trigger('change');
   },
 
   destroy: function () {
     this.attributes = {};
-    this.trigger('destroy');
+    this._trigger('destroy');
   },
 
   toJSON: function () {
     return this.attributes;
   },
 
-  init: function (obj) {
-    this.attributes = Object.assign(this.default, obj);
+  _trigger: function (name) {
+    var collection=this.collection;
+    if ((name === 'change' || name === 'destroy')&&collection) {
+      collection.trigger('change');
+    }
   }
 };
 

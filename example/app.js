@@ -11,7 +11,7 @@ $(function () {
   });
 
   const collection = new Collection();
-
+  window.collection = collection;
   const liView = MVC.View.extend({
     tagName: 'li',
     template: _.template($('#item-template').html()),
@@ -76,6 +76,8 @@ $(function () {
   var AppView = MVC.View.extend({
     el: "#todoapp",
 
+    template: _.template($('#stats-template').html()),
+
     events: {
       'keypress #new-todo': 'enter',
       'click #toggle-all': 'choose'
@@ -92,6 +94,8 @@ $(function () {
 
     initialize: function () {
       this.input = this.$("#new-todo");
+      this.count = this.$('#todo-count');
+      this.footer = this.$('footer');
       this.listenTo(this.model, 'add', this.addOne);
       this.listenTo(this.model, 'all', this.showControl);
     },
@@ -105,17 +109,36 @@ $(function () {
     showControl: function () {
       var len = this.model.length;
       if (len >= 1) {
-        this.$("#main").show()
+        this.$("#main").show();
+        this.footer.show();
       } else {
-        this.$("#main").hide()
+        this.$("#main").hide();
+        this.footer.hide();
       }
+      var record = {
+        done: 0,
+        remaining: 0
+      };
+      this.model.each(function (model) {
+        if (model.toJSON().done) {
+          record.done = ++record.done;
+        } else {
+          record.remaining = ++record.remaining;
+        }
+      });
+      if(len===record.done){
+        this.$('#toggle-all')[0].checked=true;
+      }else{
+        this.$('#toggle-all')[0].checked=false;
+      }
+      this.count.html(this.template(record))
     },
 
     choose: function () {
-      var _this=this;
+      var checked=this.$('#toggle-all')[0].checked;
       this.model.each(function (model) {
         model.set({
-          done: _this.$('#toggle-all')[0].checked
+          done: checked
         })
       })
     }

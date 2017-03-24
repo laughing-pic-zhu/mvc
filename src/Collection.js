@@ -2,7 +2,8 @@ import EventEmit from './EventEmit';
 import {extend} from './util';
 
 function Collection(obj) {
-  this.init(obj || {})
+  obj=obj||{};
+  this.models = obj.models || []
 }
 
 const obj = {
@@ -10,9 +11,7 @@ const obj = {
 
   push: function (model) {
     const Model = this.model;
-    const _model = new Model(model);
-    
-    console.log(this.models[0]===_model);
+    const _model = new Model(model,this);
     this.models.push(_model);
     this.length = this.models.length;
     this.trigger('add', _model);
@@ -31,10 +30,6 @@ const obj = {
     this.models.forEach(function (model) {
       callback.call(this, model);
     }, t)
-  },
-
-  init: function (obj) {
-    this.models = obj.models || []
   }
 };
 
