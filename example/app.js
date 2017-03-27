@@ -67,6 +67,7 @@ $(function () {
     },
 
     render: function () {
+      this.$el.toggleClass('done', this.model.get('done'));
       this.$el.html(this.template(this.model.toJSON()));
       this.input = this.$('.edit');
       return this;
@@ -80,7 +81,8 @@ $(function () {
 
     events: {
       'keypress #new-todo': 'enter',
-      'click #toggle-all': 'choose'
+      'click #toggle-all': 'choose',
+      'click #clear-completed': 'destroy'
     },
 
     enter: function (e) {
@@ -94,7 +96,7 @@ $(function () {
 
     initialize: function () {
       this.input = this.$("#new-todo");
-      this.count = this.$('#todo-count');
+      this.count = this.$('footer');
       this.footer = this.$('footer');
       this.listenTo(this.model, 'add', this.addOne);
       this.listenTo(this.model, 'all', this.showControl);
@@ -126,20 +128,26 @@ $(function () {
           record.remaining = ++record.remaining;
         }
       });
-      if(len===record.done){
-        this.$('#toggle-all')[0].checked=true;
-      }else{
-        this.$('#toggle-all')[0].checked=false;
+      if (len === record.done) {
+        this.$('#toggle-all')[0].checked = true;
+      } else {
+        this.$('#toggle-all')[0].checked = false;
       }
       this.count.html(this.template(record))
     },
 
     choose: function () {
-      var checked=this.$('#toggle-all')[0].checked;
+      var checked = this.$('#toggle-all')[0].checked;
       this.model.each(function (model) {
         model.set({
           done: checked
         })
+      })
+    },
+
+    destroy: function () {
+      this.model.models.slice(0).forEach(function (model) {
+        model.destroy();
       })
     }
   });

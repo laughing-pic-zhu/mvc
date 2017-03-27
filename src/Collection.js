@@ -27,6 +27,7 @@ const obj = {
     models.forEach((item,index)=>{
         if(item===model){
           models.splice(index,1);
+          this.length=--this.length;
         }
     })
   },
