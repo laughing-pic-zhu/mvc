@@ -22,6 +22,15 @@ const obj = {
     this.trigger('remove');
   },
 
+  remove:function(model){
+    const models = this.models;
+    models.forEach((item,index)=>{
+        if(item===model){
+          models.splice(index,1);
+        }
+    })
+  },
+
   toJSON: function () {
     return this.models;
   },

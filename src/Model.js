@@ -18,6 +18,9 @@ var obj = {
 
   destroy: function () {
     this.attributes = {};
+    if(this.collection){
+      this.collection.remove(this);
+    }
     this._trigger('destroy');
   },
 
@@ -30,6 +33,7 @@ var obj = {
     if ((name === 'change' || name === 'destroy')&&collection) {
       collection.trigger('change');
     }
+    this.trigger(name);
   }
 };
 
