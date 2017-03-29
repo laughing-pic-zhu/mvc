@@ -10,7 +10,7 @@ export const before = (n, callback)=> {
   }
 };
 
-export const extend = function(props) {
+export const extend = function (props) {
   var parent = this;
   var child = function () {
     parent.apply(this, arguments);
@@ -18,3 +18,10 @@ export const extend = function(props) {
   child.prototype = Object.assign(Object.create(parent.prototype), props, { constructor: child });
   return child;
 };
+
+let idCounter=0;
+export const uniqueId = function (prefix) {
+  const id = ++idCounter;
+  return `${ prefix + id }`
+}
+

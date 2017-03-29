@@ -1,7 +1,8 @@
 import EventEmit from './EventEmit';
-import {extend} from './util';
+import {extend,uniqueId} from './util';
 
 function Model(obj, collection) {
+  this.uid=uniqueId('m');
   this.attributes = Object.assign({}, this.default, obj || {});
   if (collection) {
     this.collection = collection;

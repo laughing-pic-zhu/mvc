@@ -1,25 +1,25 @@
 import  {extend} from './util';
 
 function View(param) {
-  this.init(param||{});
+  this.init(param || {});
 }
 
 View.prototype = {
   constructor: View,
 
   init: function (param) {
-    if(!this.el){
-      this.el=document.createElement(this.tagName||'div');
+    if (!this.el) {
+      this.el = document.createElement(this.tagName || 'div');
     }
-    this.$el=$(this.el);
+    this.$el = $(this.el);
     this.delegateEvents(this.events || {});
-    this.model=param.model;
+    this.model = param.model;
     var initialize = this.initialize || function () {
       };
     initialize.apply(this);
   },
 
-  $:function(str){
+  $: function (str) {
     return this.$el.find(str);
   },
 
@@ -35,8 +35,32 @@ View.prototype = {
     })
   },
 
+  remove: function () {
+    this.$el.remove();
+    this.stopListening();
+  },
+
   listenTo: function (model, type, callback) {
+    const _listenTo = this._listenTo = this._listenTo || [];
+    let flag=true;
+    _listenTo.some(item=> {
+      if (item.uid === model.uid) {
+        flag=false;
+        return true;
+      }
+    });
+    if(flag){
+      _listenTo.push(model);
+    }
     model.on(type, callback.bind(this));
+  },
+
+  stopListening: function () {
+    // model.off
+    const _listenTo = this._listenTo = this._listenTo || [];
+    _listenTo.forEach(item=> {
+      item.off();
+    });
   }
 };
 
