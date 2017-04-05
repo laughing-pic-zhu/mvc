@@ -3,42 +3,61 @@
 import {before} from './util';
 
 var EventEmit = function () {
-  this.on = function (name, callback) {
+  this.on = function (name, callback,id) {
     var _event = this._event = this._event || {};
     var arr = _event[name];
+    var calObj={
+      callback:callback,
+      id:id
+    };
     if (arr && arr.length >= 0) {
-      arr.push(callback);
+      arr.push(calObj);
     } else {
-      _event[name] = [callback];
+      _event[name] = [calObj];
     }
+
     return this;
   };
 
-  this.once = function (name, callback) {
+  this.once = function (name, callback,id) {
     var _call = before(1, callback);
-    this.on(name, _call);
+    this.on(name, _call,id);
   };
 
-  this.off = function (name, callback) {
+  this.off = function (name, callback,id) {
     var _event = this._event || {};
-    var arr = _event[name] || [];
-    arr.forEach((item, index)=> {
-      if (item === callback) {
-        arr.splice(index, 1);
-      }
-    })
-  };
+    if (name && callback) {
+      var arr = _event[name] || [];
+      arr.forEach((item, index)=> {
+        if (item === callback) {
+          arr.splice(index, 1);
+        }
+      })
+    } else if (id) {
+      Object.keys(_event).forEach(key=> {
+        var arr = _event[key] || [];
+        arr.forEach((item, index)=> {
+          if (item.id === id) {
+            arr.splice(index, 1);
+          }
+        })
+      })
+    }
+    ;
+  }
 
   this.trigger = function (name,option) {
     var _event = this._event || {};
     var serviceArr = _event[name] || [];
     serviceArr.forEach(item=> {
-      item.call(this,option)
+      var callback=item.callback;
+      callback.call(this,option)
     });
 
     var allArr = _event['all'] || [];
     allArr.forEach(item=> {
-      item.call(this,option)
+      var callback=item.callback;
+      callback.call(this,option)
     });
   };
 

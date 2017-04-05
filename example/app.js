@@ -62,10 +62,6 @@ $(function () {
       this.model.destroy();
     },
 
-    remove: function () {
-      this.$el.remove();
-    },
-
     render: function () {
       this.$el.toggleClass('done', this.model.get('done'));
       this.$el.html(this.template(this.model.toJSON()));
