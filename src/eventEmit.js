@@ -51,18 +51,22 @@ var EventEmit = function () {
   this.trigger = function (...arg) {
     const _event = this._event || {};
     const name = arg.shift();
-    const serviceArr = _event[name] || [];
-    serviceArr.forEach(item=> {
-      var callback = item.callback;
-      callback.apply(this, arg)
-    });
-
-    var allArr = _event['all'] || [];
-    allArr.forEach(item=> {
-      var callback = item.callback;
-      callback.apply(this, arg)
-    });
+    const events = _event[name];
+    const allEvents = _event['all'];
+    if(events){
+      this.triggerEvents(events,arg);
+    }
+    if (allEvents) {
+      this.triggerEvents(allEvents,arg);
+    }
   };
+
+  this.triggerEvents=function(events,arg){
+    events.forEach(item=> {
+      var callback = item.callback;
+      callback.apply(this, arg)
+    });
+  }
 
 };
 

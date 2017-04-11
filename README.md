@@ -7,7 +7,7 @@
 - npm start 
 - 浏览器输入 http://localhost:8080/
 
-##设计思路
+## 设计思路
 
 - [简易的mvc实现](https://github.com/laughing-pic-zhu/mvc/issues/1)
 - [mvc库与mvvm库对比](https://github.com/laughing-pic-zhu/mvc/issues/2)
