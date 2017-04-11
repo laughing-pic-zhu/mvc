@@ -1,8 +1,8 @@
 import EventEmit from './EventEmit';
-import {extend,uniqueId} from './util';
+import {extend, uniqueId} from './util';
 
 function Model(obj, collection) {
-  this.uid=uniqueId('m');
+  this.uid = uniqueId('m');
   this.attributes = Object.assign({}, this.default, obj || {});
   if (collection) {
     this.collection = collection;
@@ -11,10 +11,17 @@ function Model(obj, collection) {
 
 var obj = {
   constructor: Model,
-  set: function (model) {
-    var _model = Object.assign(this.attributes, model);
-    this.attributes = _model;
-    this._trigger('change');
+  set: function (obj) {
+    this.attributes = Object.assign(this.attributes, obj);
+    const keys = [];
+    Object.keys(obj).forEach(key=> {
+      keys.push(key);
+      this._trigger('change:' + key);
+    });
+
+    if (keys.length > 0) {
+      this._trigger('change');
+    }
   },
 
   get: function (key) {

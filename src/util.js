@@ -19,9 +19,9 @@ export const extend = function (props) {
   return child;
 };
 
-let idCounter=0;
+let idCounter = 0;
 export const uniqueId = function (prefix) {
   const id = ++idCounter;
   return `${ prefix + id }`
-}
+};
 

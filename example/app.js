@@ -143,7 +143,9 @@ $(function () {
 
     destroy: function () {
       this.model.models.slice(0).forEach(function (model) {
-        model.destroy();
+        if (model.get('done')) {
+          model.destroy();
+        }
       })
     }
   });
