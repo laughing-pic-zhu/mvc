@@ -1,24 +1,40 @@
 'use strict';
 
 import {before} from './util';
-
+const SEPARATE = /\s+/;
 var EventEmit = function () {
   this.on = function (name, callback, id) {
     if (!name)return;
-    var _event = this._event = this._event || {};
-    var calObj = {
-      callback: callback,
-      id: id
-    };
-    var keys = name.split(' ');
-    keys.forEach(key=> {
-      var arr = _event[key];
-      if (arr && arr.length >= 0) {
+    const _event  = this._event || (this._event={});
+
+    if (typeof name === 'object') {
+      Object.keys(name).forEach(key=> {
+        const arr = _event[key] || (_event[key]=[]);
+        const calObj = {
+          callback: name[key],
+          id: id
+        };
         arr.push(calObj);
-      } else {
-        _event[key] = [calObj];
-      }
-    });
+      })
+    }else if (SEPARATE.test(name)) {
+      const calObj = {
+        callback: callback,
+        id: id
+      };
+      var keys = name.split(SEPARATE);
+      keys.forEach(key=> {
+        const arr = _event[key] || (_event[key]=[]);
+        arr.push(calObj);
+      });
+    }else{
+      const calObj = {
+        callback: callback,
+        id: id
+      };
+      const arr = _event[name] || (_event[name]=[]);
+      arr.push(calObj);
+    }
+
     return this;
   };
 
@@ -53,15 +69,15 @@ var EventEmit = function () {
     const name = arg.shift();
     const events = _event[name];
     const allEvents = _event['all'];
-    if(events){
-      this.triggerEvents(events,arg);
+    if (events) {
+      this.triggerEvents(events, arg);
     }
     if (allEvents) {
-      this.triggerEvents(allEvents,arg);
+      this.triggerEvents(allEvents, arg);
     }
   };
 
-  this.triggerEvents=function(events,arg){
+  this.triggerEvents = function (events, arg) {
     events.forEach(item=> {
       var callback = item.callback;
       callback.apply(this, arg)
