@@ -4,38 +4,35 @@ import {before} from './util';
 const SEPARATE = /\s+/;
 var EventEmit = function () {
   this.on = function (name, callback, id) {
-    if (!name)return;
-    const _event  = this._event || (this._event={});
+    return this.eventsApi(name, callback, id);
+  };
 
-    if (typeof name === 'object') {
+  this.eventsApi = function (name, callback, id) {
+    let event;
+    if (name && typeof name === 'object') {
       Object.keys(name).forEach(key=> {
-        const arr = _event[key] || (_event[key]=[]);
-        const calObj = {
-          callback: name[key],
-          id: id
-        };
-        arr.push(calObj);
+        event = this.eventsApi(key, name[key], id);
       })
-    }else if (SEPARATE.test(name)) {
-      const calObj = {
-        callback: callback,
-        id: id
-      };
+    } else if (SEPARATE.test(name)) {
       var keys = name.split(SEPARATE);
       keys.forEach(key=> {
-        const arr = _event[key] || (_event[key]=[]);
-        arr.push(calObj);
+        event = this.iteratee(key, name[key], id);
       });
-    }else{
-      const calObj = {
-        callback: callback,
-        id: id
-      };
-      const arr = _event[name] || (_event[name]=[]);
-      arr.push(calObj);
+    } else {
+      event = this.iteratee(name, callback, id);
     }
+    return event;
+  };
 
-    return this;
+  this.iteratee = function (name, callback, id) {
+    const _event = this._event || (this._event = {});
+    const calObj = {
+      callback: callback,
+      id: id
+    };
+    const arr = _event[name] || (_event[name] = []);
+    arr.push(calObj);
+    return _event
   };
 
   this.once = function (name, callback, id) {
