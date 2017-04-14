@@ -69,6 +69,11 @@ var EventEmit = function () {
   };
 
   this.trigger = function (...arg) {
+    const name = arg.shift();
+    return this.eventsApi(this.triggerApi,name, ...arg);
+  };
+
+  this.triggerApi=function(...arg){
     const _event = this._event || {};
     const name = arg.shift();
     const events = _event[name];
