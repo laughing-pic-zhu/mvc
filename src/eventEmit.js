@@ -3,10 +3,6 @@
 import {before} from './util';
 const SEPARATE = /\s+/;
 var EventEmit = function () {
-  this.on = function (name, callback, id) {
-    return this.eventsApi(this.onApi,name, callback, id);
-  };
-
   this.eventsApi = function (onApi,name, callback, id) {
     let event;
     if (name && typeof name === 'object') {
@@ -22,6 +18,10 @@ var EventEmit = function () {
       event = onApi.call(this,name, callback, id);
     }
     return event;
+  };
+
+  this.on = function (name, callback, id) {
+    return this.eventsApi(this.onApi,name, callback, id);
   };
 
   this.onApi = function (name, callback, id) {
@@ -70,12 +70,11 @@ var EventEmit = function () {
 
   this.trigger = function (...arg) {
     const name = arg.shift();
-    return this.eventsApi(this.triggerApi,name, ...arg);
+    return this.eventsApi(this.triggerApi,name, void 0,...arg);
   };
 
-  this.triggerApi=function(...arg){
+  this.triggerApi=function(name,callback,...arg){
     const _event = this._event || {};
-    const name = arg.shift();
     const events = _event[name];
     const allEvents = _event['all'];
     if (events) {
@@ -92,7 +91,6 @@ var EventEmit = function () {
       callback.apply(this, arg)
     });
   }
-
 };
 
 export default EventEmit

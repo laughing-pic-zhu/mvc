@@ -57,7 +57,6 @@ View.prototype = {
   },
 
   stopListening: function () { 
-    // model.off
     const _listenTo = this._listenTo = this._listenTo || [];
     _listenTo.forEach(item=> {
       item.off(null,null,this.$id);
