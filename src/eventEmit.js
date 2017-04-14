@@ -4,10 +4,10 @@ import {before} from './util';
 const SEPARATE = /\s+/;
 var EventEmit = function () {
   this.on = function (name, callback, id) {
-    return this.eventsApi(name, callback, id);
+    return this.eventsApi(this.onApi,name, callback, id);
   };
 
-  this.eventsApi = function (name, callback, id) {
+  this.eventsApi = function (onApi,name, callback, id) {
     let event;
     if (name && typeof name === 'object') {
       Object.keys(name).forEach(key=> {
@@ -16,15 +16,15 @@ var EventEmit = function () {
     } else if (SEPARATE.test(name)) {
       var keys = name.split(SEPARATE);
       keys.forEach(key=> {
-        event = this.iteratee(key, name[key], id);
+        event = onApi.call(this,key, name[key], id);
       });
     } else {
-      event = this.iteratee(name, callback, id);
+      event = onApi.call(this,name, callback, id);
     }
     return event;
   };
 
-  this.iteratee = function (name, callback, id) {
+  this.onApi = function (name, callback, id) {
     const _event = this._event || (this._event = {});
     const calObj = {
       callback: callback,
@@ -41,24 +41,31 @@ var EventEmit = function () {
   };
 
   this.off = function (name, callback, id) {
-    var _event = this._event || {};
-    if (name && callback) {
-      var arr = _event[name] || [];
-      arr.forEach((item, index)=> {
-        if (item === callback) {
-          arr.splice(index, 1);
-        }
-      })
-    } else if (id) {
-      Object.keys(_event).forEach(key=> {
-        var arr = _event[key] || [];
-        arr.forEach((item, index)=> {
-          if (item.id === id) {
-            arr.splice(index, 1);
-          }
-        })
-      })
+    return this.eventsApi(this.offApi,name, callback, id);
+  };
+
+  this.offApi = function (name, callback, id) {
+    const _event = this._event || {};
+    if (!name && !callback && !id) {
+      this._event = {};
+      return;
     }
+    const names = name ? [name] : Object.keys(_event);
+    names.forEach(name=> {
+      const compute = _event[name];
+      const remain = [];
+      compute.forEach(item=> {
+        if (callback && item.callback !== callback || item.id !== id) {
+          remain.push(item);
+        }
+      });
+
+      if (remain.length > 0) {
+        _event[name] = remain;
+      } else {
+        delete _event[name];
+      }
+    });
   };
 
   this.trigger = function (...arg) {
