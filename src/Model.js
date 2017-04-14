@@ -3,6 +3,9 @@ import {extend, uniqueId} from './util';
 
 function Model(obj, collection) {
   this.uid = uniqueId('m');
+  this._changing = false;
+  this.changed = {};
+  this._previousAttributes = {};
   this.attributes = Object.assign({}, this.default, obj || {});
   if (collection) {
     this.collection = collection;
@@ -12,16 +15,20 @@ function Model(obj, collection) {
 var obj = {
   constructor: Model,
   set: function (obj) {
-    this.attributes = Object.assign(this.attributes, obj);
+    this._changing = true;
+    this.changed = obj;
+    this._previousAttributes = Object.assign({}, this.attributes);
+    this.attributes = Object.assign({}, this.attributes, obj);
     const keys = [];
     Object.keys(obj).forEach(key=> {
       keys.push(key);
-      this._trigger('change:' + key);
-    });
+      this._trigger('change:' + key, this);
+    }, this);
 
     if (keys.length > 0) {
-      this._trigger('change');
+      this._trigger('change', this);
     }
+    this._changing = false;
   },
 
   get: function (key) {
@@ -40,12 +47,12 @@ var obj = {
     return this.attributes;
   },
 
-  _trigger: function (name) {
+  _trigger: function (name, ...arg) {
     var collection = this.collection;
-    if ((name === 'change' || name === 'destroy') && collection) {
-      collection.trigger('change');
+    if ((name === 'change') && collection) {
+      collection.trigger('change', ...arg);
     }
-    this.trigger(name);
+    this.trigger(name, ...arg);
   }
 };
 

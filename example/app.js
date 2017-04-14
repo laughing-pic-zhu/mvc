@@ -62,7 +62,7 @@ $(function () {
       this.model.destroy();
     },
 
-    render: function () {
+    render: function (model) {
       this.$el.toggleClass('done', this.model.get('done'));
       this.$el.html(this.template(this.model.toJSON()));
       this.input = this.$('.edit');
