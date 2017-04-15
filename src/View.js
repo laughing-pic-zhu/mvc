@@ -1,4 +1,4 @@
-import  {extend,uniqueId} from './util';
+import  {extend, uniqueId} from './util';
 
 function View(param) {
   this.init(param || {});
@@ -11,7 +11,7 @@ View.prototype = {
     if (!this.el) {
       this.el = document.createElement(this.tagName || 'div');
     }
-    this.$id=uniqueId('v');
+    this.$id = uniqueId('v');
     this.$el = $(this.el);
     this.delegateEvents(this.events || {});
     this.model = param.model;
@@ -43,23 +43,23 @@ View.prototype = {
 
   listenTo: function (model, type, callback) {
     const _listenTo = this._listenTo = this._listenTo || [];
-    let flag=true;
+    let flag = true;
     _listenTo.some(item=> {
       if (item.uid === model.uid) {
-        flag=false;
+        flag = false;
         return true;
       }
     });
-    if(flag){
+    if (flag) {
       _listenTo.push(model);
     }
-    model.on(type, callback.bind(this),this.$id);
+    model.on(type, callback, this);
   },
 
-  stopListening: function () { 
+  stopListening: function () {
     const _listenTo = this._listenTo = this._listenTo || [];
     _listenTo.forEach(item=> {
-      item.off(null,null,this.$id);
+      item.off(null, null, this);
     });
   }
 };

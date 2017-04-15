@@ -3,50 +3,50 @@
 import {before} from './util';
 const SEPARATE = /\s+/;
 var EventEmit = function () {
-  this.eventsApi = function (onApi,name, callback, id) {
+  this.eventsApi = function (iteratee, name, callback, context) {
     let event;
     if (name && typeof name === 'object') {
       Object.keys(name).forEach(key=> {
-        event = this.eventsApi(key, name[key], id);
+        event = this.eventsApi(key, name[key], context);
       })
     } else if (SEPARATE.test(name)) {
       var keys = name.split(SEPARATE);
       keys.forEach(key=> {
-        event = onApi.call(this,key, name[key], id);
+        event = iteratee.call(this,key, name[key], context);
       });
     } else {
-      event = onApi.call(this,name, callback, id);
+      event = iteratee.call(this,name, callback, context);
     }
     return event;
   };
 
-  this.on = function (name, callback, id) {
-    return this.eventsApi(this.onApi,name, callback, id);
+  this.on = function (name, callback, context) {
+    return this.eventsApi(this.onApi, name, callback, context);
   };
 
-  this.onApi = function (name, callback, id) {
+  this.onApi = function (name, callback, context) {
     const _event = this._event || (this._event = {});
     const calObj = {
       callback: callback,
-      id: id
+      context: context
     };
     const arr = _event[name] || (_event[name] = []);
     arr.push(calObj);
     return _event
   };
 
-  this.once = function (name, callback, id) {
+  this.once = function (name, callback, context) {
     var _call = before(1, callback);
-    this.on(name, _call, id);
+    this.on(name, _call, context);
   };
 
-  this.off = function (name, callback, id) {
-    return this.eventsApi(this.offApi,name, callback, id);
+  this.off = function (name, callback, context) {
+    return this.eventsApi(this.offApi, name, callback, context);
   };
 
-  this.offApi = function (name, callback, id) {
+  this.offApi = function (name, callback, context) {
     const _event = this._event || {};
-    if (!name && !callback && !id) {
+    if (!name && !callback && !context) {
       this._event = {};
       return;
     }
@@ -54,8 +54,9 @@ var EventEmit = function () {
     names.forEach(name=> {
       const compute = _event[name];
       const remain = [];
+      // const
       compute.forEach(item=> {
-        if (callback && item.callback !== callback || item.id !== id) {
+        if (callback && item.callback !== callback || item.context !== context) {
           remain.push(item);
         }
       });
@@ -70,10 +71,10 @@ var EventEmit = function () {
 
   this.trigger = function (...arg) {
     const name = arg.shift();
-    return this.eventsApi(this.triggerApi,name, void 0,...arg);
+    return this.eventsApi(this.triggerApi, name, void 0, ...arg);
   };
 
-  this.triggerApi=function(name,callback,...arg){
+  this.triggerApi = function (name, callback, ...arg) {
     const _event = this._event || {};
     const events = _event[name];
     const allEvents = _event['all'];
@@ -81,14 +82,15 @@ var EventEmit = function () {
       this.triggerEvents(events, arg);
     }
     if (allEvents) {
+      arg.unshift(name);
       this.triggerEvents(allEvents, arg);
     }
   };
 
   this.triggerEvents = function (events, arg) {
     events.forEach(item=> {
-      var callback = item.callback;
-      callback.apply(this, arg)
+      const { callback, context }= item;
+      callback.apply(context, arg)
     });
   }
 };

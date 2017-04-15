@@ -48,10 +48,6 @@ var obj = {
   },
 
   _trigger: function (name, ...arg) {
-    var collection = this.collection;
-    if ((name === 'change') && collection) {
-      collection.trigger('change', ...arg);
-    }
     this.trigger(name, ...arg);
   }
 };
