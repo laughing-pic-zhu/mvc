@@ -1,4 +1,4 @@
-import EventEmit from './EventEmit';
+import Event from './Event';
 import {extend} from './util';
 
 function Collection(obj) {
@@ -55,7 +55,7 @@ const obj = {
 };
 
 
-Collection.prototype = Object.assign(Object.create(new EventEmit()), obj);
+Collection.prototype = Object.assign(Object.create(new Event()), obj);
 Collection.extend = extend.bind(Collection);
 
 export default  Collection;

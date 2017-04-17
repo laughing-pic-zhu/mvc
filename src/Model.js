@@ -1,4 +1,4 @@
-import EventEmit from './EventEmit';
+import Event from './Event';
 import {extend, uniqueId} from './util';
 
 function Model(obj, collection) {
@@ -52,7 +52,7 @@ var obj = {
   }
 };
 
-Model.prototype = Object.assign(Object.create(new EventEmit()), obj);
+Model.prototype = Object.assign(Object.create(new Event()), obj);
 Model.extend = extend.bind(Model);
 
 export default  Model;

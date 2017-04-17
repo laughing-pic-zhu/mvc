@@ -2,7 +2,7 @@
 
 import {before} from './util';
 const SEPARATE = /\s+/;
-var EventEmit = function () {
+var Event = function () {
   this.eventsApi = function (iteratee, name, callback, context) {
     let event;
     if (name && typeof name === 'object') {
@@ -95,5 +95,5 @@ var EventEmit = function () {
   }
 };
 
-export default EventEmit
+export default Event
 
