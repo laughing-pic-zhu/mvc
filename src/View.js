@@ -10,16 +10,37 @@ View.prototype = {
   tagName: 'div',
 
   init: function (param) {
-    if (!this.el) {
-      this.el = document.createElement(this.tagName);
-    }
     this.$id = uniqueId('view');
-    this.$el = $(this.el);
-    this.delegateEvents(this.events || {});
     this.model = param.model;
+    this.id = param.id||'';
+    this.className = param.className||'';
+    this._ensureElement();
     var initialize = this.initialize || function () {
       };
     initialize.apply(this);
+  },
+
+  setElement: function (element) {
+    this.undelegateEvents();
+    this.el=element;
+    this.$el = $(element);
+    this.delegateEvents(this.events || {});
+  },
+
+  _ensureElement: function () {
+    if (!this.el) {
+      this.setElement(document.createElement(this.tagName));
+      const attrs = {};
+      if(this.id){
+        attrs['id']=this.id;
+      }
+      if(this.className){
+        attrs['className']=this.className;
+      }
+      this.$el.attr(attrs);
+    }else{
+      this.setElement(this.el);
+    }
   },
 
   $: function (str) {
@@ -33,9 +54,15 @@ View.prototype = {
       if (arr.length === 2) {
         var event = arr[0];
         var dom = arr[1];
-        $el.on(event, dom, this[events[item]].bind(this));
+        $el.on(event + '.delegateEvents' + this.$id, dom, this[events[item]].bind(this));
       }
     })
+  },
+
+  undelegateEvents: function () {
+    if (this.$el) {
+      this.$el.off('.delegateEvents' + this.$id);
+    }
   },
 
   remove: function () {

@@ -9,5 +9,4 @@
 
 ## 设计思路
 
-- [简易的mvc实现](https://github.com/laughing-pic-zhu/mvc/issues/1)
-	
+- [web前端mvc实现](https://github.com/laughing-pic-zhu/mvc/issues/1)
