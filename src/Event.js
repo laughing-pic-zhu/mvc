@@ -54,13 +54,11 @@ var Event = function () {
     names.forEach(name=> {
       const compute = _event[name];
       const remain = [];
-      // const
       compute.forEach(item=> {
         if (callback && item.callback !== callback || item.context !== context) {
           remain.push(item);
         }
       });
-
       if (remain.length > 0) {
         _event[name] = remain;
       } else {

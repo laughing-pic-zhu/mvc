@@ -1,46 +1,87 @@
 import Event from './Event';
-import {extend} from './util';
+import {extend, splice} from './util';
 
 function Collection(obj) {
   obj = obj || {};
-  this.models = obj.models || []
+  this.models = obj.models || [];
+  this.length=this.models.length;
 }
 
 const obj = {
   constructor: Collection,
 
   _addReference: function (model) {
-    model.on('all',this._onModelEvent,this);
+    model.on('all', this._onModelEvent, this);
   },
 
-  _onModelEvent: function (name,model) {
-    if(name==='change'||name==='remove'||name==='destroy'){
-      this.trigger(name,model);
+  _onModelEvent: function (name, model) {
+    if (name === 'destroy') {
+      this.remove(model);
+      return;
     }
+    this.trigger(name, model);
+  },
+
+  _removeReference: function (model) {
+    if (this === model.collection) delete model.collection;
+    model.off('all', this._onModelEvent, this);
+  },
+
+  at: function (index) {
+    return this.models[index];
   },
 
   push: function (model) {
+    this.add(model, this.length);
+  },
+
+  pop: function () {
+    const model = this.at(this.length - 1);
+    this.remove(model);
+  },
+
+  unshift: function (model) {
+    this.add(model, 0);
+  },
+
+  shift: function () {
+    const model = this.at(0);
+    this.remove(model);
+  },
+
+  add: function (model, index) {
     const Model = this.model;
     const _model = new Model(model, this);
-    this.models.push(_model);
+    splice(this.models, [_model], index);
     this.length = this.models.length;
     this._addReference(_model);
     this.trigger('add', _model);
   },
 
-  pop: function () {
-    this.model.pop();
-    this.trigger('remove');
-  },
-
   remove: function (model) {
     const models = this.models;
-    models.forEach((item, index)=> {
-      if (item === model) {
-        models.splice(index, 1);
-        this.length = --this.length;
+    const remains = [];
+    models.forEach((item)=> {
+      if (item !== model) {
+        remains.push(item);
+      } else {
+        this._removeReference(model);
       }
-    })
+    });
+    const len = remains.length;
+    if (len < this.length) {
+      this.models = remains;
+      this.length = len;
+      this.trigger('update', this);
+    }
+  },
+
+  reset: function () {
+    this.models.forEach(model=>{
+      this._removeReference(model);
+    });
+    this.models=[];
+    this.length=0;
   },
 
   toJSON: function () {

@@ -37,10 +37,7 @@ var obj = {
 
   destroy: function () {
     this.attributes = {};
-    if (this.collection) {
-      this.collection.remove(this);
-    }
-    this._trigger('destroy');
+    this._trigger('destroy',this);
   },
 
   toJSON: function () {

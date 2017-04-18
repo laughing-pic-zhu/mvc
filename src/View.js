@@ -7,11 +7,13 @@ function View(param) {
 View.prototype = {
   constructor: View,
 
+  tagName: 'div',
+
   init: function (param) {
     if (!this.el) {
-      this.el = document.createElement(this.tagName || 'div');
+      this.el = document.createElement(this.tagName);
     }
-    this.$id = uniqueId('v');
+    this.$id = uniqueId('view');
     this.$el = $(this.el);
     this.delegateEvents(this.events || {});
     this.model = param.model;
