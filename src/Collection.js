@@ -96,7 +96,7 @@ const obj = {
 };
 
 
-Collection.prototype = Object.assign(Object.create(new Event()), obj);
+Collection.prototype = Object.assign(new Event(), obj);
 Collection.extend = extend.bind(Collection);
 
 export default  Collection;

@@ -22,11 +22,11 @@ var obj = {
     const keys = [];
     Object.keys(obj).forEach(key=> {
       keys.push(key);
-      this._trigger('change:' + key, this);
+      this.trigger('change:' + key, this);
     }, this);
 
     if (keys.length > 0) {
-      this._trigger('change', this);
+      this.trigger('change', this);
     }
     this._changing = false;
   },
@@ -36,20 +36,17 @@ var obj = {
   },
 
   destroy: function () {
-    this.attributes = {};
-    this._trigger('destroy',this);
+    this.stopListening();
+    this.trigger('destroy', this);
   },
 
   toJSON: function () {
     return this.attributes;
-  },
-
-  _trigger: function (name, ...arg) {
-    this.trigger(name, ...arg);
   }
+
 };
 
-Model.prototype = Object.assign(Object.create(new Event()), obj);
+Model.prototype = Object.assign(new Event(), obj);
 Model.extend = extend.bind(Model);
 
 export default  Model;

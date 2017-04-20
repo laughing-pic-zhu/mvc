@@ -12,10 +12,10 @@ var Event = function () {
     } else if (SEPARATE.test(name)) {
       var keys = name.split(SEPARATE);
       keys.forEach(key=> {
-        event = iteratee.call(this,key, name[key], context);
+        event = iteratee.call(this, key, name[key], context);
       });
     } else {
-      event = iteratee.call(this,name, callback, context);
+      event = iteratee.call(this, name, callback, context);
     }
     return event;
   };
@@ -89,6 +89,28 @@ var Event = function () {
     events.forEach(item=> {
       const { callback, context }= item;
       callback.apply(context, arg)
+    });
+  };
+
+  this.listenTo = function (model, type, callback) {
+    const _listenTo = this._listenTo = this._listenTo || [];
+    let flag = true;
+    _listenTo.some(item=> {
+      if (item.uid === model.uid) {
+        flag = false;
+        return true;
+      }
+    });
+    if (flag) {
+      _listenTo.push(model);
+    }
+    model.on(type, callback, this);
+  };
+
+  this.stopListening = function () {
+    const _listenTo = this._listenTo = this._listenTo || [];
+    _listenTo.forEach(item=> {
+      item.off(null, null, this);
     });
   }
 };

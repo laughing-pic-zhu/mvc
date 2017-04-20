@@ -1,10 +1,11 @@
 import  {extend, uniqueId} from './util';
+import Event from './Event';
 
 function View(param) {
   this.init(param || {});
 }
 
-View.prototype = {
+const obj = {
   constructor: View,
 
   tagName: 'div',
@@ -68,30 +69,10 @@ View.prototype = {
   remove: function () {
     this.stopListening();
     this.$el.remove();
-  },
-
-  listenTo: function (model, type, callback) {
-    const _listenTo = this._listenTo = this._listenTo || [];
-    let flag = true;
-    _listenTo.some(item=> {
-      if (item.uid === model.uid) {
-        flag = false;
-        return true;
-      }
-    });
-    if (flag) {
-      _listenTo.push(model);
-    }
-    model.on(type, callback, this);
-  },
-
-  stopListening: function () {
-    const _listenTo = this._listenTo = this._listenTo || [];
-    _listenTo.forEach(item=> {
-      item.off(null, null, this);
-    });
   }
+
 };
 
+View.prototype = Object.assign(new Event(), obj);
 View.extend = extend.bind(View);
 export default View;
